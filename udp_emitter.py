@@ -5,7 +5,7 @@ import struct
 import socket
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_address = ('10.0.1.48', 10000)
+server_address = ('10.0.1.48', 8051)
 
 v = triad_openvr.triad_openvr()
 v.print_discovered_objects()
@@ -22,7 +22,7 @@ if interval:
     while(True):
         start = time.time()
         txt = ""
-        data =  v.devices["tracker_1"].get_pose_euler()
+        data =  v.devices["tracker_1"].get_pose_quaternion()
         sent = sock.sendto(struct.pack('d'*len(data), *data), server_address)
         print("\r" + txt, end="")
         sleep_time = interval-(time.time()-start)
