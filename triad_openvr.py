@@ -56,7 +56,7 @@ class pose_sample_buffer():
         self.yaw.append(180 / math.pi * math.atan(pose_mat[1][0] /pose_mat[0][0]))
         self.pitch.append(180 / math.pi * math.atan(-1 * pose_mat[2][0] / math.sqrt(pow(pose_mat[2][1], 2) + math.pow(pose_mat[2][2], 2))))
         self.roll.append(180 / math.pi * math.atan(pose_mat[2][1] /pose_mat[2][2]))
-        r_w = math.sqrt(1+pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2])/2
+        r_w = math.sqrt(abs(1+pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2]))/2
         self.r_w.append(r_w)
         self.r_x.append((pose_mat[2][1]-pose_mat[1][2])/(4*r_w))
         self.r_y.append((pose_mat[0][2]-pose_mat[2][0])/(4*r_w))
