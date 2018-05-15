@@ -1,7 +1,7 @@
 {
 	"steamvr" : {
 		"requireHmd" : false,
-		"forcedDriver" : "",
+		"forcedDriver" : "null",
 		"forcedHmd" : "",
 		"displayDebug" : false,
 		"debugProcessPipe" : "",
@@ -20,7 +20,7 @@
 		"gridColor" : "", 
 		"playAreaColor" : "",
 		"showStage" : false,
-		"activateMultipleDrivers" : false,
+		"activateMultipleDrivers" : true,
 		"directMode" : true,
 		"usingSpeakers" : false,
 		"speakersForwardYawOffsetDegrees" : 0.0,
