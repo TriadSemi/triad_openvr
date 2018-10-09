@@ -10,12 +10,40 @@ def update_text(txt):
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler angles (in degrees)
 def convert_to_euler(pose_mat):
-    yaw = 180 / math.pi * math.atan(pose_mat[1][0] /pose_mat[0][0])
-    pitch = 180 / math.pi * math.atan(-1 * pose_mat[2][0] / math.sqrt(pow(pose_mat[2][1], 2) + math.pow(pose_mat[2][2], 2)))
-    roll = 180 / math.pi * math.atan(pose_mat[2][1] /pose_mat[2][2])
+    cosine_for_pitch = math.sqrt(pose_mat[0][0] ** 2 + pose_mat[1][0] ** 2)
+    is_singular = cosine_for_pitch < 10**-6
+    if not is_singular:
+        yaw = math.atan2(pose_mat[1][0], pose_mat[0][0])
+        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
+        roll = math.atan2(pose_mat[2][1], pose_mat[2][2])
+    else:
+        yaw = math.atan2(-pose_mat[1][2], pose_mat[1][1])
+        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
+        roll = 0
+    
     x = pose_mat[0][3]
     y = pose_mat[1][3]
     z = pose_mat[2][3]
+    return [x,y,z,math.degrees(yaw),math.degrees(pitch),math.degrees(roll)]
+
+#Convert the 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler angles (in radians)
+def convert_to_radians(pose_mat):
+    
+    cosine_for_pitch = math.sqrt(pose_mat[0][0] ** 2 + pose_mat[1][0] ** 2)
+    is_singular = cosine_for_pitch < 10**-6
+    if not is_singular:
+        yaw = math.atan2(pose_mat[1][0], pose_mat[0][0])
+        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
+        roll = math.atan2(pose_mat[2][1], pose_mat[2][2])
+    else:
+        yaw = math.atan2(-pose_mat[1][2], pose_mat[1][1])
+        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
+        roll = 0
+    
+    x = pose_mat[0][3]
+    y = pose_mat[1][3]
+    z = pose_mat[2][3]
+    
     return [x,y,z,yaw,pitch,roll]
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Quaternion
@@ -91,6 +119,10 @@ class vr_tracked_device():
         pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_euler(pose[self.index].mDeviceToAbsoluteTracking)
     
+    def get_pose_radians(self):
+        pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
+        return convert_to_radians(pose[self.index].mDeviceToAbsoluteTracking)
+    
     def get_pose_quaternion(self):
         pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
@@ -109,6 +141,7 @@ class triad_openvr():
         # Initializing object to hold indexes for various tracked objects 
         self.object_names = {"Tracking Reference":[],"HMD":[],"Controller":[],"Tracker":[]}
         self.devices = {}
+        self.vr.resetSeatedZeroPose()
         poses = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,
                                                                openvr.k_unMaxTrackedDeviceCount)
         # Iterate through the pose list to find the active devices and determine their type

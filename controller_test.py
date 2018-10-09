@@ -17,8 +17,8 @@ if interval:
     while(True):
         start = time.time()
         txt = ""
-        for each in v.devices["controller_1"].get_pose_euler():
-            txt += "%.4f" % each
+        for each in v.devices["tracker_1"].get_pose_euler():
+            txt += "%.0f" % each
             txt += " "
         print("\r" + txt, end="")
         sleep_time = interval-(time.time()-start)
