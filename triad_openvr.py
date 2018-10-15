@@ -10,41 +10,26 @@ def update_text(txt):
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler angles (in degrees)
 def convert_to_euler(pose_mat):
-    cosine_for_pitch = math.sqrt(pose_mat[0][0] ** 2 + pose_mat[1][0] ** 2)
-    is_singular = cosine_for_pitch < 10**-6
-    if not is_singular:
-        yaw = math.atan2(pose_mat[1][0], pose_mat[0][0])
-        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
-        roll = math.atan2(pose_mat[2][1], pose_mat[2][2])
-    else:
-        yaw = math.atan2(-pose_mat[1][2], pose_mat[1][1])
-        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
-        roll = 0
-    
-    x = pose_mat[0][3]
-    y = pose_mat[1][3]
-    z = pose_mat[2][3]
-    return [x,y,z,math.degrees(yaw),math.degrees(pitch),math.degrees(roll)]
+    rad_list = convert_to_radians(pose_mat)
+    return [rad_list[0],rad_list[1],rad_list[2],math.degrees(rad_list[3]),math.degrees(rad_list[4]),math.degrees(rad_list[5])]
 
 #Convert the 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler angles (in radians)
 def convert_to_radians(pose_mat):
-    
-    cosine_for_pitch = math.sqrt(pose_mat[0][0] ** 2 + pose_mat[1][0] ** 2)
+    cosine_for_pitch = math.sqrt(pose_mat[2][0] ** 2 + pose_mat[0][0] ** 2)
     is_singular = cosine_for_pitch < 10**-6
     if not is_singular:
-        yaw = math.atan2(pose_mat[1][0], pose_mat[0][0])
-        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
-        roll = math.atan2(pose_mat[2][1], pose_mat[2][2])
+        yaw = math.atan2(pose_mat[0][0], pose_mat[2][0])
+        pitch = math.atan2(-pose_mat[1][0], cosine_for_pitch)
+        roll = math.atan2(pose_mat[1][1], -pose_mat[1][2])
     else:
-        yaw = math.atan2(-pose_mat[1][2], pose_mat[1][1])
-        pitch = math.atan2(-pose_mat[2][0], cosine_for_pitch)
+        yaw = math.atan2(-pose_mat[0][2], -pose_mat[0][1])
+        pitch = math.atan2(-pose_mat[1][0], cosine_for_pitch)
         roll = 0
     
     x = pose_mat[0][3]
     y = pose_mat[1][3]
     z = pose_mat[2][3]
-    
-    return [x,y,z,yaw,pitch,roll]
+    return [x,y,z,-yaw,pitch,roll]
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Quaternion
 def convert_to_quaternion(pose_mat):
