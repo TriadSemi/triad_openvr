@@ -8,6 +8,13 @@ def update_text(txt):
     sys.stdout.write('\r'+txt)
     sys.stdout.flush()
 
+def get_threesixtyatan(num):
+    ret = math.degrees(num)
+    
+    ret = (ret + 360)%360
+
+    return math.radians(ret)
+
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler angles (in degrees)
 def convert_to_euler(pose_mat):
     rad_list = convert_to_radians(pose_mat)
@@ -15,29 +22,41 @@ def convert_to_euler(pose_mat):
 
 #Convert the 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler angles (in radians)
 def convert_to_radians(pose_mat):
-    cosine_for_pitch = math.sqrt(pose_mat[2][0] ** 2 + pose_mat[0][0] ** 2)
-    is_singular = cosine_for_pitch < 10**-6
-    if not is_singular:
-        yaw = math.atan2(pose_mat[0][0], pose_mat[2][0])
-        pitch = math.atan2(-pose_mat[1][0], cosine_for_pitch)
-        roll = math.atan2(pose_mat[1][1], -pose_mat[1][2])
-    else:
-        yaw = math.atan2(-pose_mat[0][2], -pose_mat[0][1])
-        pitch = math.atan2(-pose_mat[1][0], cosine_for_pitch)
-        roll = 0
+    quat_pose_list = convert_to_quaternion(pose_mat)
+    x = quat_pose_list[0]
+    y = quat_pose_list[1]
+    z = quat_pose_list[2]
     
-    x = pose_mat[0][3]
-    y = pose_mat[1][3]
-    z = pose_mat[2][3]
-    return [x,y,z,-yaw,pitch,roll]
+    q0 = quat_pose_list[3]
+    q1 = quat_pose_list[4]
+    q2 = quat_pose_list[5]
+    q3 = quat_pose_list[6]
+
+    sinr_cosp = 2*(q0*q1+q2*q3)
+    cosr_cosp = 1-2*(q1**2 + q2**2)
+    sinp = 2*(q0*q2-q3*q1)
+    siny_cosp = 2*(q0*q3+q1*q2)
+    cosy_cosp = 1-2*(q2**2+q3**2)
+    
+    phi = math.atan2(sinr_cosp, cosr_cosp)
+    phi = get_threesixtyatan(phi)
+    
+    theta = math.asin(sinp)
+
+    psi = math.atan2(siny_cosp, cosy_cosp)
+    psi = get_threesixtyatan(psi)
+    
+    return [x, y, z, phi, theta, psi]
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Quaternion
 def convert_to_quaternion(pose_mat):
-    # Per issue #2, adding a abs() so that sqrt only results in real numbers
-    r_w = math.sqrt(abs(1+pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2]))/2
-    r_x = (pose_mat[2][1]-pose_mat[1][2])/(4*r_w)
-    r_y = (pose_mat[0][2]-pose_mat[2][0])/(4*r_w)
-    r_z = (pose_mat[1][0]-pose_mat[0][1])/(4*r_w)
+    r_w = math.sqrt( max( 0, 1 + pose_mat[0][0] + pose_mat[1][1]+ pose_mat[2][2] ) ) / 2
+    r_x = math.sqrt( max( 0, 1 + pose_mat[0][0] - pose_mat[1][1] - pose_mat[2][2] ) ) / 2
+    r_y = math.sqrt( max( 0, 1 - pose_mat[0][0] + pose_mat[1][1] - pose_mat[2][2] ) ) / 2
+    r_z = math.sqrt( max( 0, 1 - pose_mat[0][0] - pose_mat[1][1] + pose_mat[2][2] ) ) / 2
+    r_x *= math.copysign(1, r_x * ( -pose_mat[2][1] + pose_mat[1][2] ) )
+    r_y *= math.copysign(1,r_y * ( -pose_mat[0][2] + pose_mat[2][0] ) )
+    r_z *= math.copysign(1,r_z * ( pose_mat[1][0] - pose_mat[0][1] ) )
 
     x = pose_mat[0][3]
     y = pose_mat[1][3]
@@ -101,7 +120,7 @@ class vr_tracked_device():
         return rtn
         
     def get_pose_euler(self):
-        pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
+        pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseSeated, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_euler(pose[self.index].mDeviceToAbsoluteTracking)
     
     def get_pose_radians(self):
