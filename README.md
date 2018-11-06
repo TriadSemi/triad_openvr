@@ -44,5 +44,6 @@ The goal is to identify devices by serial, in order to keep the same name for th
           "type": "Tracker",
           "serial":"LHR-XXXXXXXX"
         }
+    ]
 }
 ```
