@@ -16,3 +16,33 @@ plt.ylabel('X Coordinate (meters)')
 ```
 
 ![Example plot of captured data](images/simple_xcoord_plot.png "Example Plot")
+
+# Configuration file
+
+The goal is to identify devices by serial, in order to keep the same name for the same physical device. for maing it work, you just have to change serials and names in the 'config.json' file. Here is an example of config file :
+
+```
+{
+    "devices":[
+        {
+          "name": "hmd",
+          "type": "HMD",
+          "serial":"XXX-XXXXXXXX"
+        },
+        {
+          "name": "tracking_reference_1",
+          "type": "Tracking Reference",
+          "serial":"LHB-XXXXXXXX"
+        },
+        {
+          "name": "controller_1",
+          "type": "Controller",
+          "serial":"XXX-XXXXXXXX"
+        },
+        {
+          "name": "tracker_1",
+          "type": "Tracker",
+          "serial":"LHR-XXXXXXXX"
+        }
+}
+```
