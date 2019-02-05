@@ -13,7 +13,7 @@ v.print_discovered_objects()
 if len(sys.argv) == 1:
     interval = 1/250
 elif len(sys.argv) == 2:
-    interval = 1/float(sys.argv[0])
+    interval = 1/float(sys.argv[1])
 else:
     print("Invalid number of arguments")
     interval = False
