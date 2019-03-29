@@ -96,7 +96,7 @@ class vr_tracked_device():
         pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
     
-    def from_controller_state_to_dict(pControllerState):
+    def controller_state_to_dict(self, pControllerState):
         # This function is graciously borrowed from https://gist.github.com/awesomebytes/75daab3adb62b331f21ecf3a03b3ab46
         # docs: https://github.com/ValveSoftware/openvr/wiki/IVRSystem::GetControllerState
         d = {}
@@ -127,7 +127,7 @@ class vr_tracked_device():
     
     def get_controller_inputs(self):
         result, state = self.vr.getControllerState(self.index)
-        return from_controller_state_to_dict(state)
+        return self.controller_state_to_dict(state)
 
 class vr_tracking_reference(vr_tracked_device):
     def get_mode(self):
