@@ -109,6 +109,14 @@ class vr_tracked_device():
             return convert_to_euler(pose[self.index].mDeviceToAbsoluteTracking)
         else:
             return None
+        
+    def get_pose_matrix(self, pose=None):
+        if pose == None:
+            pose = get_pose(self.vr)
+        if pose[self.index].bPoseIsValid:
+            return pose[self.index].mDeviceToAbsoluteTracking
+        else:
+            return None
 
     def get_velocity(self, pose=None):
         if pose == None:
