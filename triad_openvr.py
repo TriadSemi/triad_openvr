@@ -109,7 +109,7 @@ class vr_tracked_device():
             return convert_to_euler(pose[self.index].mDeviceToAbsoluteTracking)
         else:
             return None
-        
+
     def get_pose_matrix(self, pose=None):
         if pose == None:
             pose = get_pose(self.vr)
@@ -172,6 +172,12 @@ class vr_tracked_device():
     def get_controller_inputs(self):
         result, state = self.vr.getControllerState(self.index)
         return self.controller_state_to_dict(state)
+
+    def trigger_haptic_pulse(self, duration_micros=1000, axis_id=0):
+        """
+        Causes devices with haptic feedback to vibrate for a short time.
+        """
+        self.vr.triggerHapticPulse(self.index ,axis_id, duration_micros)
 
 class vr_tracking_reference(vr_tracked_device):
     def get_mode(self):
