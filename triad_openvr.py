@@ -77,16 +77,16 @@ class vr_tracked_device():
 
     @lru_cache(maxsize=None)
     def get_serial(self):
-        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_SerialNumber_String).decode('utf-8')
+        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_SerialNumber_String)
 
     def get_model(self):
-        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_ModelNumber_String).decode('utf-8')
+        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_ModelNumber_String)
 
     def get_battery_percent(self):
-        return self.vr.getFloatTrackedDeviceProperty(self.index, openvr.Prop_DeviceBatteryPercentage_Float)[0]
+        return self.vr.getFloatTrackedDeviceProperty(self.index, openvr.Prop_DeviceBatteryPercentage_Float)
 
     def is_charging(self):
-        return self.vr.getBoolTrackedDeviceProperty(self.index, openvr.Prop_DeviceIsCharging_Bool)[0]
+        return self.vr.getBoolTrackedDeviceProperty(self.index, openvr.Prop_DeviceIsCharging_Bool)
 
 
     def sample(self,num_samples,sample_rate):
