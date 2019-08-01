@@ -77,16 +77,16 @@ class vr_tracked_device():
 
     @lru_cache(maxsize=None)
     def get_serial(self):
-        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_SerialNumber_String).decode('utf-8')
+        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_SerialNumber_String)
 
     def get_model(self):
-        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_ModelNumber_String).decode('utf-8')
+        return self.vr.getStringTrackedDeviceProperty(self.index, openvr.Prop_ModelNumber_String)
 
     def get_battery_percent(self):
-        return self.vr.getFloatTrackedDeviceProperty(self.index, openvr.Prop_DeviceBatteryPercentage_Float)[0]
+        return self.vr.getFloatTrackedDeviceProperty(self.index, openvr.Prop_DeviceBatteryPercentage_Float)
 
     def is_charging(self):
-        return self.vr.getBoolTrackedDeviceProperty(self.index, openvr.Prop_DeviceIsCharging_Bool)[0]
+        return self.vr.getBoolTrackedDeviceProperty(self.index, openvr.Prop_DeviceIsCharging_Bool)
 
 
     def sample(self,num_samples,sample_rate):
@@ -109,7 +109,7 @@ class vr_tracked_device():
             return convert_to_euler(pose[self.index].mDeviceToAbsoluteTracking)
         else:
             return None
-        
+
     def get_pose_matrix(self, pose=None):
         if pose == None:
             pose = get_pose(self.vr)
@@ -172,6 +172,12 @@ class vr_tracked_device():
     def get_controller_inputs(self):
         result, state = self.vr.getControllerState(self.index)
         return self.controller_state_to_dict(state)
+
+    def trigger_haptic_pulse(self, duration_micros=1000, axis_id=0):
+        """
+        Causes devices with haptic feedback to vibrate for a short time.
+        """
+        self.vr.triggerHapticPulse(self.index ,axis_id, duration_micros)
 
 class vr_tracking_reference(vr_tracked_device):
     def get_mode(self):
