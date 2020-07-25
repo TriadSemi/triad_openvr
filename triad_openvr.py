@@ -137,8 +137,10 @@ class vr_tracked_device():
     def get_pose_quaternion(self, pose=None):
         if pose == None:
             pose = get_pose(self.vr)
-        pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
-        return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
+        if pose[self.index].bPoseIsValid:
+            return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
+        else:
+            return None
 
     def controller_state_to_dict(self, pControllerState):
         # This function is graciously borrowed from https://gist.github.com/awesomebytes/75daab3adb62b331f21ecf3a03b3ab46
