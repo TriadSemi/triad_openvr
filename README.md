@@ -1,49 +1,50 @@
-# Triad OpenVR Python Wrapper
+# Vive tracker UDP Server
 
-This is an enhanced wrapper for the already excellent [pyopenvr library](https://github.com/cmbruns/pyopenvr) by [cmbruns](https://github.com/cmbruns).  The goal of this library is to create easy to use python functions for any SteamVR tracked system.
+UDP server for Vive Tracker.
+Based on [this repository](https://github.com/TriadSemi/triad_openvr).
 
-# Getting Started
+## Prerequisites 
+Follow [this](https://www.acer.com/ac/en/US/content/windows-mixed-reality-setup-steamvr) to install SteamVR
+
+Follow [this](http://help.triadsemi.com/en/articles/836917-steamvr-tracking-without-an-hmd) to configure SteamVR
+
+Follow [this](https://github.com/cmbruns/pyopenvr) for Python prerequisites
+
+## Setup 
+1. Setup at least two Vive lighthouses
+2. Connect lighthouse dongle to the local machine
+3. Pair the Vive tracker to steamVR [link](https://www.vive.com/us/support/wireless-tracker/category_howto/pairing-vive-tracker.html).
+
+
+## Run 
+```bash
+python udp_emitter.py [IP [port]]
+```
+
+* IP should be the IP of the target deice, and it defaults to loopback (`127.0.0.1`)
+* Port defaults to `8051`
+
+## Test
+
+Run the following on the target device to verify the incoming UDP:
 
 ```python
-import triad_openvr as vr
-import pylab as plt
-v = vr.triad_openvr()
-data = v.devices["controller_1"].sample(1000,250)
-plt.plot(data.time,data.x)
-plt.title('Controller X Coordinate')
-plt.xlabel('Time (seconds)')
-plt.ylabel('X Coordinate (meters)')
+import socket
+
+UDP_IP = "0.0.0.0"
+UDP_PORT = 8051
+
+sock = socket.socket(socket.AF_INET, # Internet
+                     socket.SOCK_DGRAM) # UDP
+sock.bind((UDP_IP, UDP_PORT))
+
+while True:
+    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    print("received message: %s" % data)
 ```
 
-![Example plot of captured data](images/simple_xcoord_plot.png "Example Plot")
 
-# Configuration file
-
-The goal is to identify devices by serial, in order to keep the same name for the same physical device. for maing it work, you just have to change serials and names in the 'config.json' file. Here is an example of config file :
-
-```
-{
-    "devices":[
-        {
-          "name": "hmd",
-          "type": "HMD",
-          "serial":"XXX-XXXXXXXX"
-        },
-        {
-          "name": "tracking_reference_1",
-          "type": "Tracking Reference",
-          "serial":"LHB-XXXXXXXX"
-        },
-        {
-          "name": "controller_1",
-          "type": "Controller",
-          "serial":"XXX-XXXXXXXX"
-        },
-        {
-          "name": "tracker_1",
-          "type": "Tracker",
-          "serial":"LHR-XXXXXXXX"
-        }
-    ]
-}
-```
+## Unity
+To enable data aquisition in a unity editor:
+1. Disable all Firewalls, or allow Unity editor in private and public network
+2. Make sure `block incomming connections` tickbox is disabled in Windows Firewall settings
