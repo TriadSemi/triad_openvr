@@ -5,19 +5,28 @@ import smooth_movement
 import struct
 import socket
 import ipaddress
-
+import argparse
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_address = ('127.0.0.1' if len(sys.argv)<2 else sys.argv[1], 8051 if len(sys.argv)<3 else int(sys.argv[2]))
-if ipaddress.ip_address(server_address[0]).is_multicast:
+
+# 192.168.1.158
+parser = argparse.ArgumentParser(description='Vive Tracker UDP')
+parser.add_argument('--ip', type=str, required=False, default='127.0.0.1', help='IP address of the target machine')
+parser.add_argument('--port', type=int, required=False, default=8051, help='IP address of the target machine')
+parser.add_argument('--mode', type=str, required=False, default="quaternion", choices=['quaternion', 'euler'],
+                    help='Rotation representation mode [quaternion, euler]')
+args = parser.parse_args()
+
+
+if ipaddress.ip_address(args.ip).is_multicast:
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
 MODE_EULER = 0
 MODE_QUATERNION = 1
 
-mode = MODE_QUATERNION # todo: read from argv
+mode = MODE_QUATERNION if args.mode == 'quaternion' else MODE_EULER
 
-print("Sending UDP to", server_address)
-sock.connect(server_address)
+print(f"Sending UDP to {args.ip}:{args.port}")
+sock.connect((args.ip, args.port))
 
 v = triad_openvr.triad_openvr()
 v.print_discovered_objects()

@@ -18,11 +18,12 @@ Follow [this](https://github.com/cmbruns/pyopenvr) for Python prerequisites
 
 ## Run 
 ```bash
-python udp_emitter.py [IP [port]]
+python udp_emitter.py [-h] [--ip IP] [--port PORT] [--mode {quaternion,euler}]
 ```
 
-* IP should be the IP of the target deice, and it defaults to loopback (`127.0.0.1`)
+* IP should be the IP of the target device, and it defaults to loopback (`127.0.0.1`)
 * Port defaults to `8051`
+* Mode defaults to `quaternion`
 
 ## Test
 
