@@ -8,12 +8,13 @@ import ipaddress
 import argparse
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# 192.168.1.158
+
 parser = argparse.ArgumentParser(description='Vive Tracker UDP')
 parser.add_argument('--ip', type=str, required=False, default='127.0.0.1', help='IP address of the target machine')
 parser.add_argument('--port', type=int, required=False, default=8051, help='IP address of the target machine')
 parser.add_argument('--mode', type=str, required=False, default="quaternion", choices=['quaternion', 'euler'],
                     help='Rotation representation mode [quaternion, euler]')
+parser.add_argument('--fps', type=int, required=False, default=250, help='Sample rate')
 args = parser.parse_args()
 
 
@@ -35,13 +36,11 @@ trackers = {}
 for key, device in v.devices.items():
     if (device.device_class == 'Tracker'):
         trackers[key] = (device.get_serial(), (bytes(device.get_serial(), 'utf-8') + bytes(31))[:31], smooth_movement.Smoother())
-if len(sys.argv) == 3:
-    interval = 1/float(sys.argv[2])
-else:
-    interval = 1/250
+
+interval = 1 / args.fps
 
 smoother = smooth_movement.Smoother()
-while(True):
+while True:
     start = time.time()
     for tracker_id, (tracker_serial, packet_header, smoother) in trackers.items():
         try:
@@ -63,5 +62,5 @@ while(True):
         except:
             pass
         sleep_time = interval-(time.time()-start)
-        if sleep_time>0:
+        if sleep_time > 0:
             time.sleep(sleep_time)
