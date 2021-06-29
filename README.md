@@ -6,7 +6,7 @@ Based on [this repository](https://github.com/TriadSemi/triad_openvr).
 ## Prerequisites 
 Follow [this](https://www.acer.com/ac/en/US/content/windows-mixed-reality-setup-steamvr) to install SteamVR
 
-Follow [this](http://help.triadsemi.com/en/articles/836917-steamvr-tracking-without-an-hmd) to configure SteamVR
+Follow [this](Documentation/setup_vive_tracker.md) to configure SteamVR to use a Vive Tracker with no headset
 
 Follow [this](https://github.com/cmbruns/pyopenvr) for Python prerequisites
 
